@@ -19,6 +19,10 @@ class BadRequestException(AppException):
 class ForbiddenException(AppException):
     def __init__(self, message: str = "Bạn không có quyền thực hiện hành động này"):
         super().__init__(status.HTTP_403_FORBIDDEN, message, "FORBIDDEN")
+        
+class ConflictException(AppException):
+    def __init__(self, message: str = "Dữ liệu bạn nhập vào đã tồn tại."):
+        super().__init__(status.HTTP_409_CONFLICT, message, "CONFLICT")
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -65,3 +69,5 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "message": "Đã có lỗi xảy ra, vui lòng thử lại sau",
             },
         )
+        
+    

@@ -1,23 +1,25 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
 class UserBase(BaseModel):
     email: EmailStr
     full_name: str
-    role: Optional[str] = "USER"
-
+#cái này dùng khi nào?
 class UserCreate(UserBase):
     password: str
+    role: Optional[str] = "USER"
 
-class UserUpdate(BaseModel):
-    full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    is_active: Optional[bool] = None
+# Schema cho Login dạng JSON
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 class UserResponse(UserBase):
     id: int
+    role: str
     is_active: bool
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
