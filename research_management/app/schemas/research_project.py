@@ -1,36 +1,37 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
 
-# Member Schemas
-class ResearchMemberBase(BaseModel):
-    role: Optional[str] = "MEMBER"
-
-class ResearchMemberCreate(ResearchMemberBase):
+class MemberAdd(BaseModel):
     user_id: int
 
-class ResearchMemberResponse(ResearchMemberBase):
+class MemberResponse(BaseModel):
     project_id: int
     user_id: int
+    role: str
     joined_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
-# Project Schemas
 class ResearchProjectBase(BaseModel):
-    title: str
+    title: str = Field(..., min_length=3, max_length=255)
     description: Optional[str] = None
 
 class ResearchProjectCreate(ResearchProjectBase):
     pass
 
 class ResearchProjectUpdate(BaseModel):
-    title: Optional[str] = None
+    title: Optional[str] = Field(None, min_length=3, max_length=255)
     description: Optional[str] = None
 
-class ResearchProjectResponse(ResearchProjectBase):
+class ProjectResponse(ResearchProjectBase):
     id: int
     owner_id: int
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+ResearchMemberCreate = MemberAdd
+ResearchMemberResponse = MemberResponse
+ResearchProjectResponse = ProjectResponse

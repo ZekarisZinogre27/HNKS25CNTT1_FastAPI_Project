@@ -1,4 +1,5 @@
 from app.db.database import Base
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -13,7 +14,7 @@ class ResearchTask(Base):
     status = Column(String(50), nullable=False)
     priority = Column(String(50), nullable=False)
     due_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     project = relationship("ResearchProject", back_populates="tasks")
     assignee = relationship("User", back_populates="assigned_tasks")

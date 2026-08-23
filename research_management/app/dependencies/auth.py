@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.core.config import settings
 from app.core.exceptions import BadRequestException, ForbiddenException
-from app.models.users import User
+from app.models.user import User
 
-# Sử dụng HTTPBearer thay cho OAuth2PasswordBearer
+# Dùng HTTP Bearer để nhận JWT mà không cần OAuth2 password flow.
 security = HTTPBearer()
 
 def get_current_user(

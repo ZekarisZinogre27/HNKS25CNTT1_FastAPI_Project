@@ -1,6 +1,5 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -8,7 +7,6 @@ class UserBase(BaseModel):
 #cái này dùng khi nào?
 class UserCreate(UserBase):
     password: str
-    role: Optional[str] = "USER"
 
 # Schema cho Login dạng JSON
 class LoginRequest(BaseModel):
