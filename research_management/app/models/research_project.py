@@ -13,8 +13,16 @@ class ResearchProject(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     owner = relationship("User", back_populates="owned_projects")
-    members = relationship("ResearchMember", back_populates="project")
-    tasks = relationship("ResearchTask", back_populates="project")
+    members = relationship(
+        "ResearchMember",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
+    tasks = relationship(
+        "ResearchTask",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
 
 
 class ResearchMember(Base):

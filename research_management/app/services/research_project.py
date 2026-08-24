@@ -82,9 +82,22 @@ def delete_project(db: Session, project_id: int, user: User) -> None:
     db.commit()
 
 
-def list_members(db: Session, project_id: int, user: User) -> List[ResearchMember]:
+def list_members(
+    db: Session,
+    project_id: int,
+    user: User,
+    page: int = 1,
+    page_size: int = 20,
+) -> List[ResearchMember]:
     get_project(db, project_id, user)
-    return db.query(ResearchMember).filter(ResearchMember.project_id == project_id).all()
+    return (
+        db.query(ResearchMember)
+        .filter(ResearchMember.project_id == project_id)
+        .order_by(ResearchMember.joined_at, ResearchMember.user_id)
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
 
 
 def add_member(

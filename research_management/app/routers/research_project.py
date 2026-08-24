@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.dependencies.auth import get_current_user
@@ -57,10 +57,12 @@ def delete_project(
 @router.get("/research-projects/{project_id}/members", response_model=List[MemberResponse])
 def list_members(
     project_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return project_service.list_members(db, project_id, current_user)
+    return project_service.list_members(db, project_id, current_user, page, page_size)
 
 
 @router.post("/research-projects/{project_id}/members", response_model=MemberResponse, status_code=status.HTTP_201_CREATED)
