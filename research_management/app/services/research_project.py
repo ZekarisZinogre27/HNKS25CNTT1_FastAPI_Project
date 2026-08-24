@@ -39,10 +39,10 @@ def create_project(db: Session, project_in: ResearchProjectCreate, user: User) -
         owner_id=user.id,
     )
     db.add(project)
-    db.commit()
-    db.refresh(project)
+    db.flush()
     db.add(ResearchMember(project_id=project.id, user_id=user.id, role="OWNER"))
     db.commit()
+    db.refresh(project)
     return project
 
 
