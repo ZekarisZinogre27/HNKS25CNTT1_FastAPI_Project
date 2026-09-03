@@ -8,7 +8,7 @@ from app.models.research_project import ResearchProject
 from app.models.research_task import ResearchTask
 from app.models.user import User
 from app.schemas.research_task import ResearchTaskCreate, ResearchTaskUpdate
-from app.services.research_project import get_membership
+from app.services.research_project import get_membership, is_admin
 
 
 def get_task_or_404(db: Session, task_id: int) -> ResearchTask:
@@ -22,6 +22,8 @@ def require_project_member(db: Session, project_id: int, user: User) -> Research
     project = db.query(ResearchProject).filter(ResearchProject.id == project_id).first()
     if project is None:
         raise NotFoundException("Không tìm thấy đề tài")
+    if is_admin(user):
+        return project
     if get_membership(db, project_id, user.id) is None:
         raise ForbiddenException("Bạn không phải thành viên của đề tài")
     return project
@@ -83,7 +85,7 @@ def update_task(
 ) -> ResearchTask:
     task = get_task_or_404(db, task_id)
     project = require_project_member(db, task.project_id, user)
-    if user.id != project.owner_id and user.id != task.assignee_id:
+    if not is_admin(user) and user.id != project.owner_id and user.id != task.assignee_id:
         raise ForbiddenException("Chỉ OWNER hoặc người được giao mới có thể cập nhật nhiệm vụ")
     values = task_in.model_dump(include=task_in.model_fields_set)
     if "assignee_id" in values:
@@ -98,7 +100,7 @@ def update_task(
 def delete_task(db: Session, task_id: int, user: User) -> None:
     task = get_task_or_404(db, task_id)
     project = require_project_member(db, task.project_id, user)
-    if user.id != project.owner_id:
+    if not is_admin(user) and user.id != project.owner_id:
         raise ForbiddenException("Chỉ OWNER mới có thể xóa nhiệm vụ")
     db.delete(task)
     db.commit()

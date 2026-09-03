@@ -14,13 +14,13 @@ app.include_router(users_router.router)
 app.include_router(project_router.router)
 app.include_router(task_router.router)
 
-@app.get("/migration")
+@app.get("/migration", tags=["Checking_run"])
 def health_check():
     return {
         "status": "Code đang chạy",
         "message": "Research Group Management API đang chạy"
     }
 
-@app.get("/")
+@app.get("/", tags=["Root_message"])
 def root():
     return {"message": "chào"}

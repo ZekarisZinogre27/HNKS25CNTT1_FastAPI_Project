@@ -24,8 +24,14 @@ def get_membership(db: Session, project_id: int, user_id: int) -> ResearchMember
     )
 
 
+def is_admin(user: User) -> bool:
+    return user.role == "ADMIN"
+
+
 def require_owner(db: Session, project_id: int, user: User) -> ResearchProject:
     project = get_project_or_404(db, project_id)
+    if is_admin(user):
+        return project
     membership = get_membership(db, project_id, user.id)
     if membership is None or membership.role != "OWNER":
         raise ForbiddenException("Chỉ OWNER mới có quyền thực hiện hành động này")
@@ -47,6 +53,8 @@ def create_project(db: Session, project_in: ResearchProjectCreate, user: User) -
 
 
 def list_projects(db: Session, user: User) -> List[ResearchProject]:
+    if is_admin(user):
+        return db.query(ResearchProject).all()
     return (
         db.query(ResearchProject)
         .join(ResearchMember, ResearchMember.project_id == ResearchProject.id)
@@ -57,6 +65,8 @@ def list_projects(db: Session, user: User) -> List[ResearchProject]:
 
 def get_project(db: Session, project_id: int, user: User) -> ResearchProject:
     project = get_project_or_404(db, project_id)
+    if is_admin(user):
+        return project
     if get_membership(db, project_id, user.id) is None:
         raise ForbiddenException("Bạn không phải thành viên của đề tài")
     return project
